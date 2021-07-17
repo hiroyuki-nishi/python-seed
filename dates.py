@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
 import sys
 
@@ -21,16 +22,33 @@ year = int(sys.argv[1])
 month = int(sys.argv[2])
 day = int(sys.argv[3])
 
-print("---------- STAR: create ----------")
-date_list = [datetime(year, month, 1) + timedelta(days=i) for i in range(day)]
-date_str_list = [d.strftime("%Y-%m-%d") for d in date_list]
-print(date_str_list)
-print("---------- END: create ----------")
 
-d = "\n".join(date_str_list)
+def __create_dates():
+    try:
+        print("---------- STAR: create ----------")
+        date_list = [datetime(year, month, 1) + timedelta(days=i) for i in range(day)]
+        date_str_list = [d.strftime("%Y-%m-%d") for d in date_list]
+        print(date_str_list)
+        print("---------- END: create ----------")
+        return "\n".join(date_str_list)
+    except Exception as e:
+        print("日付作成失敗")
+        print(e)
+        raise
 
-print("---------- STAR: write ----------")
-with open('./dates.txt', 'w') as f:
-    print(type(f))
-    f.write(d)
-print("---------- END: write ----------")
+
+def write_file(list):
+    try:
+        print("---------- STAR: write ----------")
+        with open('./dates.txt', 'w') as f:
+            print(type(f))
+            f.write(list)
+        print("---------- END: write ----------")
+    except Exception as e:
+        print("ファイル書込み失敗")
+        print(e)
+        raise
+
+write_file(__create_dates())
+
+
