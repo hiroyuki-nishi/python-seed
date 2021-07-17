@@ -2,6 +2,8 @@
 from datetime import datetime, timedelta
 import sys
 
+from core.file import write_file
+
 """
 指定された年月日のテキストファイルを出力するpythonファイルです。
 
@@ -37,18 +39,6 @@ def __create_dates():
         raise
 
 
-def write_file(list):
-    try:
-        print("---------- STAR: write ----------")
-        with open('./dates.txt', 'w') as f:
-            print(type(f))
-            f.write(list)
-        print("---------- END: write ----------")
-    except Exception as e:
-        print("ファイル書込み失敗")
-        print(e)
-        raise
-
-write_file(__create_dates())
+write_file(file_path="./dates.txt", data=__create_dates(), mode="w")
 
 
