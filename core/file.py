@@ -1,3 +1,4 @@
+# [ ] TODO modeはenumにしたい
 def write_file(file_path: str, data: any, mode="w"):
     try:
         print(f"---------- STAR: write {file_path} ----------")

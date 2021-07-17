@@ -12,6 +12,7 @@ def __sample_sleep():
     time.sleep(sleep_seconds)
 
 
+# [ ] ★ TODO: 失敗しやすいところなのでテストコードを実装する ★
 def __write_log(date: str):
     try:
         print(date)
@@ -19,7 +20,7 @@ def __write_log(date: str):
         # [ ] TODO: 2 ファイルに追記
         # [ ] TODO: 2-1 実行タイミン
         __sample_sleep()
-        write_file(file_path=f"./out/{date}.json", data="PIYOPIYO")
+        write_file(file_path=f"./out/{date}.json", data="PIYOPIYO", mode="a")
         # [ ] TODO: 3 続きがあるなら1を繰り返す(lastEvaluatedKey?)
     except Exception as e:
         # [ ] TODO: 一時的なスロットルや失敗でもリトライしたい

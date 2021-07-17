@@ -1,3 +1,8 @@
 # ----------------------------------
 # DynamoDB
-# TODO: 1. BatchGetItemを作成
+# [ ] TODO: 1. BatchGetItemを作成
+# [ ] TODO: 2. テストコードの実装
+"""
+1. 正常
+2. 異常
+"""
