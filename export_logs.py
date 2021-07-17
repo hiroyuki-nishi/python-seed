@@ -8,6 +8,10 @@ from core.file import write_file
 
 # [ ] ★ TODO: 失敗しやすいところなのでテストコードを実装する ★
 def __write_log(date: str):
+    """
+    n 台数分の繰返し処理
+    (例) 1000台なら、1000回ループする
+    """
     try:
         print(date)
         # [ ] TODO: 1. ログを検索(BatchGetItem)
@@ -25,6 +29,15 @@ def __write_log(date: str):
 
 # [x] TODO: 3. 並列処理をしてファイルを作成+書き込む
 def __write_logs(date_str_list, clients=""):
+    """
+    n (日数分) の並列数
+    (例) max_workersが4なら4並列
+    [date_str_list] = [1, 2, ... 31]なら
+    処理1. [1,2,3,4]
+    処理2. [5,6,7,8]
+    ....
+    全て処理されるまで並列で動作する
+    """
     try:
         print("---------- STAR: write_files ----------")
         # [ ] TODO: クエリ用にclientsの情報を型として渡す?
