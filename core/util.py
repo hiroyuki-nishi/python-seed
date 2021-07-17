@@ -5,13 +5,25 @@ import random
 import time
 
 
-def __parallel_execute(func: any, data: any, max_workers=4):
+def __parallel_process_execute(func: any, data: any, max_workers=4):
     try:
         with futures.ProcessPoolExecutor(max_workers=max_workers) as executor:
             """
             1. 配列生成
             2. 1要素毎に別プロセスで処理
             """
+            executors = [executor.submit(func, d) for d in data]
+            for future in concurrent.futures.as_completed(executors):
+                print(f"COMPLETE: executor. { future.result() }")
+            executor.shutdown()
+    except Exception as e:
+        print(e)
+        raise
+
+
+def __parallel_thread_execute(func: any, data: any, max_workers=4):
+    try:
+        with futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
             executors = [executor.submit(func, d) for d in data]
             for future in concurrent.futures.as_completed(executors):
                 print(f"COMPLETE: executor. { future.result() }")

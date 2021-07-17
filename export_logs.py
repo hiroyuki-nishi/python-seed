@@ -2,7 +2,7 @@
 import traceback
 
 from core import logger
-from core.util import __parallel_execute, __sample_sleep
+from core.util import __parallel_process_execute, __sample_sleep
 from core.file import write_file
 
 
@@ -28,7 +28,7 @@ def __write_logs(date_str_list, clients=""):
     try:
         print("---------- STAR: write_files ----------")
         # [ ] TODO: クエリ用にclientsの情報を型として渡す?
-        __parallel_execute(func=__write_log, data=date_str_list, max_workers=4)
+        __parallel_process_execute(func=__write_log, data=date_str_list, max_workers=4)
         print("---------- END: write_files ----------")
     except Exception as e:
         # [ ] TODO: リトライしたい?
