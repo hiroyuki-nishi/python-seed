@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import random
 import time
+import traceback
 
+from core import logger
 from core.util import __parallel_execute
 from core.file import write_file
 
@@ -9,6 +11,9 @@ from core.file import write_file
 # [ ] TODO 削除する
 def __sample_sleep():
     sleep_seconds = random.randint(1, 3)
+    print(sleep_seconds)
+    if sleep_seconds >= 2:
+        return 1/0
     time.sleep(sleep_seconds)
 
 
@@ -25,23 +30,20 @@ def __write_log(date: str):
     except Exception as e:
         # [ ] TODO: 一時的なスロットルや失敗でもリトライしたい
         # [ ] TODO: 指定した失敗回数を超えたら 対象日付のクエリ?(日付？)をerrorファイルに書き出す
-        print("ファイル書込み失敗")
-        print(e)
-        raise
+        logger.error(description=f"__write_log. ファイル書込み失敗. date: {date}", cause=traceback.format_exc())
+        write_file(file_path=f"./error/{date}.json", data="ERROR", mode="a")
 
 
 # [x] TODO: 3. 並列処理をしてファイルを作成+書き込む
-def __write_logs(date_str_list, clients):
+def __write_logs(date_str_list, clients=""):
     try:
         print("---------- STAR: write_files ----------")
         # [ ] TODO: クエリ用にclientsの情報を型として渡す?
         __parallel_execute(func=__write_log, data=date_str_list, max_workers=4)
         print("---------- END: write_files ----------")
     except Exception as e:
-        # [ ] TODO: リトライしたい
-        print("ファイル書込み失敗")
-        print(e)
-        raise
+        # [ ] TODO: リトライしたい?
+        logger.error(description=f"__write_logs.", cause=traceback.print_exc())
 
 
 # [ ] TODO
@@ -51,7 +53,6 @@ def __find_clients():
     except Exception as e:
         print("???")
         print(e)
-        raise
 
 
 def read_file(path="./dates.txt"):
@@ -64,8 +65,12 @@ def read_file(path="./dates.txt"):
         raise
 
 
-r = read_file()
-print(r)
-clients = __find_clients()
-__write_logs(date_str_list=r)
-print('completed.')
+def export_logs():
+    r = read_file()
+    print(r)
+    clients = __find_clients()
+    __write_logs(date_str_list=r)
+    print('completed.')
+
+
+export_logs()

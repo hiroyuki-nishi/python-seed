@@ -2,3 +2,5 @@
 # [] TODO: 日付のconvert
 # [] TODO: 並列変換処理を実装
 
+def convert_logs():
+    print("complete")
