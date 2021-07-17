@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from concurrent import futures
 import concurrent.futures
+import random
+import time
 
 
 def __parallel_execute(func: any, data: any, max_workers=4):
@@ -17,5 +19,15 @@ def __parallel_execute(func: any, data: any, max_workers=4):
     except Exception as e:
         print(e)
         raise
+
+
+def __sample_sleep():
+    sleep_seconds = random.randint(1, 3)
+    print(sleep_seconds)
+    if sleep_seconds >= 2:
+        return 1/0
+    time.sleep(sleep_seconds)
+
+
 
 

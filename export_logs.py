@@ -1,20 +1,9 @@
 # -*- coding: utf-8 -*-
-import random
-import time
 import traceback
 
 from core import logger
-from core.util import __parallel_execute
+from core.util import __parallel_execute, __sample_sleep
 from core.file import write_file
-
-
-# [ ] TODO 削除する
-def __sample_sleep():
-    sleep_seconds = random.randint(1, 3)
-    print(sleep_seconds)
-    if sleep_seconds >= 2:
-        return 1/0
-    time.sleep(sleep_seconds)
 
 
 # [ ] ★ TODO: 失敗しやすいところなのでテストコードを実装する ★
