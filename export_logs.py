@@ -4,23 +4,28 @@ import datetime
 
 from core import logger
 from core.util import __parallel_process_execute, __sample_sleep
-from core.file import write_file, create_dirs
+from core.file import write_file, create_dirs, read_file
+from infrastructure.dynamodb import find_client_ids
 
 
 class Params:
     path: str
     error_path: str
+    client_ids: any # TODO
 
-    def __init__(self, path, error_path):
+    def __init__(self, path, error_path, client_ids):
         self.path = path
         self.error_path = error_path
+        self.client_ids = client_ids
 
 
 # [ ] ★ TODO: 失敗しやすいところなのでテストコードを実装する ★
-def __write_log(date: str, params: Params):
+def __write_log(date: str, params: Params, max_workers=50):
     """
     n 台数分の繰返し処理
-    (例) 1000台なら、1000回ループする
+    (例)
+    1. 1000台なら、1000回ループする
+    2. 50並列で動作させる
     """
     try:
         print(date)
@@ -28,6 +33,7 @@ def __write_log(date: str, params: Params):
         # [ ] TODO: 2 ファイルに追記
         # [ ] TODO: 2-1 実行タイミン
         __sample_sleep()
+        # __parallel_process_execute(func=find_logs, data=query, option=params, max_workers=max_workers)
         write_file(file_path=f"{params.path}/{date}.json", data="PIYOPIYO", mode="a")
         # [ ] TODO: 3 続きがあるなら1を繰り返す(lastEvaluatedKey?)
     except Exception as e:
@@ -46,7 +52,7 @@ def __create_dirs(params: Params):
         logger.error(description=f"__create_dirs. params: {params}", cause=traceback.print_exc())
 
 
-def __write_logs(date_str_list, clients=""):
+def __write_logs(date_str_list, client_ids):
     """
     n (日数分) の並列数
     (例) max_workersが4なら4並列
@@ -61,10 +67,10 @@ def __write_logs(date_str_list, clients=""):
         now = datetime.datetime.now()
         params = Params(
             path=f"./out/{now}/dist",
-            error_path=f"./out/{now}/error"
+            error_path=f"./out/{now}/error",
+            client_ids=client_ids
         )
         __create_dirs(params=params)
-        # [ ] TODO: クエリ用にclientsの情報を型として渡す?(path, error_path, clients情報など)
         __parallel_process_execute(func=__write_log, data=date_str_list, option=params, max_workers=4)
         print("---------- END: write_files ----------")
     except Exception as e:
@@ -72,29 +78,10 @@ def __write_logs(date_str_list, clients=""):
         logger.error(description=f"__write_logs.", cause=traceback.print_exc())
 
 
-# [ ] TODO
-def __find_clients():
-    try:
-        print("???")
-    except Exception as e:
-        print("???")
-        print(e)
-
-
-def read_file(path="./dates.txt"):
-    try:
-        with open(path) as f:
-            return f.read().splitlines()
-    except Exception as e:
-        print("ファイル読込み失敗")
-        print(e)
-        raise
-
-
 def export_logs():
-    r = read_file()
-    clients = __find_clients()
-    __write_logs(date_str_list=r)
+    r = read_file(path="./dates.txt")
+    client_ids = find_client_ids()
+    __write_logs(date_str_list=r, client_ids=client_ids)
     print('completed.')
 
 

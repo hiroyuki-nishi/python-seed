@@ -20,3 +20,12 @@ def create_dirs(path: str):
     except Exception as e:
         print("ディレクトリ作成失敗")
         return e
+
+
+def read_file(path: str):
+    try:
+        with open(path) as f:
+            return f.read().splitlines()
+    except Exception as e:
+        print("ファイル読込み失敗")
+        return e

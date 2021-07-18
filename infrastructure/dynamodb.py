@@ -17,3 +17,13 @@ def find_logs(query, func):
     """
     print(query)
 
+
+# [ ] TODO
+def find_client_ids():
+    try:
+        return range(5)
+    except Exception as e:
+        print("???")
+        print(e)
+
+
