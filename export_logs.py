@@ -1,13 +1,23 @@
 # -*- coding: utf-8 -*-
 import traceback
+import datetime
 
 from core import logger
 from core.util import __parallel_process_execute, __sample_sleep
-from core.file import write_file
+from core.file import write_file, create_dirs
+
+
+class Params:
+    path: str
+    error_path: str
+
+    def __init__(self, path, error_path):
+        self.path = path
+        self.error_path = error_path
 
 
 # [ ] ★ TODO: 失敗しやすいところなのでテストコードを実装する ★
-def __write_log(date: str):
+def __write_log(date: str, params: Params):
     """
     n 台数分の繰返し処理
     (例) 1000台なら、1000回ループする
@@ -18,16 +28,24 @@ def __write_log(date: str):
         # [ ] TODO: 2 ファイルに追記
         # [ ] TODO: 2-1 実行タイミン
         __sample_sleep()
-        write_file(file_path=f"./out/{date}.json", data="PIYOPIYO", mode="a")
+        write_file(file_path=f"{params.path}/{date}.json", data="PIYOPIYO", mode="a")
         # [ ] TODO: 3 続きがあるなら1を繰り返す(lastEvaluatedKey?)
     except Exception as e:
         # [ ] TODO: 一時的なスロットルや失敗でもリトライしたい
         # [ ] TODO: 指定した失敗回数を超えたら 対象日付のクエリ?(日付？)をerrorファイルに書き出す
         logger.error(description=f"__write_log. ファイル書込み失敗. date: {date}", cause=traceback.format_exc())
-        write_file(file_path=f"./error/{date}.json", data="ERROR", mode="a")
+        write_file(file_path=f"{params.error_path}/{date}.json", data="ERROR", mode="a")
 
 
-# [x] TODO: 3. 並列処理をしてファイルを作成+書き込む
+def __create_dirs(params: Params):
+    try:
+        create_dirs(params.path)
+        create_dirs(params.error_path)
+    except Exception as e:
+        # [ ] TODO: リトライしたい?
+        logger.error(description=f"__create_dirs. params: {params}", cause=traceback.print_exc())
+
+
 def __write_logs(date_str_list, clients=""):
     """
     n (日数分) の並列数
@@ -40,8 +58,14 @@ def __write_logs(date_str_list, clients=""):
     """
     try:
         print("---------- STAR: write_files ----------")
-        # [ ] TODO: クエリ用にclientsの情報を型として渡す?
-        __parallel_process_execute(func=__write_log, data=date_str_list, max_workers=4)
+        now = datetime.datetime.now()
+        params = Params(
+            path=f"./out/{now}/dist",
+            error_path=f"./out/{now}/error"
+        )
+        __create_dirs(params=params)
+        # [ ] TODO: クエリ用にclientsの情報を型として渡す?(path, error_path, clients情報など)
+        __parallel_process_execute(func=__write_log, data=date_str_list, option=params, max_workers=4)
         print("---------- END: write_files ----------")
     except Exception as e:
         # [ ] TODO: リトライしたい?
@@ -69,7 +93,6 @@ def read_file(path="./dates.txt"):
 
 def export_logs():
     r = read_file()
-    print(r)
     clients = __find_clients()
     __write_logs(date_str_list=r)
     print('completed.')

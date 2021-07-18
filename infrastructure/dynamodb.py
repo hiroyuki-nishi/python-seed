@@ -7,12 +7,13 @@
 2. 異常
 """
 
+
 # [ ] TODO:
-def hoge(query, func):
+def find_logs(query, func):
     """
     1. queryを実行
     2. funcを実行
     3. 続きがあるなら繰り返す
     """
-    pass
+    print(query)
 

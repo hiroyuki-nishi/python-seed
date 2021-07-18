@@ -1,3 +1,6 @@
+import os
+
+
 # [ ] TODO modeはenumにしたい
 def write_file(file_path: str, data: any, mode="w"):
     try:
@@ -6,8 +9,14 @@ def write_file(file_path: str, data: any, mode="w"):
             f.write(data)
         print(f"---------- END: write {file_path} -----------")
     except Exception as e:
-        # TODO: リトライしたい
         print("ファイル書込み失敗")
-        print(e)
-        raise
+        return e
 
+
+def create_dirs(path: str):
+    try:
+        if not os.path.exists(path):
+            os.makedirs(path)
+    except Exception as e:
+        print("ディレクトリ作成失敗")
+        return e
