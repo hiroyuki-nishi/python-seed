@@ -79,7 +79,7 @@ def __write_logs(date_str_list, client_ids):
 
 
 def export_logs():
-    r = read_file(path="./dates.txt")
+    r = read_file(file_path="./dates.txt")
     client_ids = find_client_ids()
     __write_logs(date_str_list=r, client_ids=client_ids)
     print('completed.')
