@@ -1,8 +1,13 @@
 import os
+from enum import Enum
 
 
-# [ ] TODO modeはenumにしたい
-def write_file(file_path: str, data: any, mode="w"):
+class Mode(Enum):
+    OVER_WRITE = "w"
+    ADD_WRITE = "a"
+
+
+def write_file(file_path: str, data: any, mode=Mode.OVER_WRITE):
     try:
         print(f"---------- STAR: write {file_path} ----------")
         with open(file_path, mode) as f:
