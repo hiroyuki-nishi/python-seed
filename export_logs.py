@@ -3,7 +3,7 @@ import traceback
 import datetime
 
 from core import logger
-from core.util import __parallel_process_execute, __sample_sleep
+from core.util import __sample_sleep, __parallel_thread_execute
 from core.file import write_file, create_dirs, read_file
 from infrastructure.dynamodb import find_client_ids
 
@@ -33,7 +33,6 @@ def __write_log(date: str, params: Params, max_workers=50):
         # [ ] TODO: 2 ファイルに追記
         # [ ] TODO: 2-1 実行タイミン
         __sample_sleep()
-        # __parallel_process_execute(func=find_logs, data=query, option=params, max_workers=max_workers)
         write_file(file_path=f"{params.path}/{date}.json", data="PIYOPIYO", mode="a")
         # [ ] TODO: 3 続きがあるなら1を繰り返す(lastEvaluatedKey?)
     except Exception as e:
@@ -44,15 +43,18 @@ def __write_log(date: str, params: Params, max_workers=50):
 
 
 def __create_dirs(params: Params):
+    """
+    出力用のディレクトリを作成
+    """
     try:
         create_dirs(params.path)
         create_dirs(params.error_path)
     except Exception as e:
-        # [ ] TODO: リトライしたい?
         logger.error(description=f"__create_dirs. params: {params}", cause=traceback.print_exc())
+        raise e
 
 
-def __write_logs(date_str_list, client_ids):
+def __write_logs(date_str_list, client_ids, params: Params):
     """
     n (日数分) の並列数
     (例) max_workersが4なら4並列
@@ -64,24 +66,23 @@ def __write_logs(date_str_list, client_ids):
     """
     try:
         print("---------- STAR: write_files ----------")
-        now = datetime.datetime.now()
-        params = Params(
-            path=f"./out/{now}/dist",
-            error_path=f"./out/{now}/error",
-            client_ids=client_ids
-        )
-        __create_dirs(params=params)
-        __parallel_process_execute(func=__write_log, data=date_str_list, option=params, max_workers=4)
+        __parallel_thread_execute(func=__write_log, data=date_str_list, option=params, max_workers=4)
         print("---------- END: write_files ----------")
     except Exception as e:
-        # [ ] TODO: リトライしたい?
         logger.error(description=f"__write_logs.", cause=traceback.print_exc())
 
 
 def export_logs():
     r = read_file(file_path="./dates.txt")
     client_ids = find_client_ids()
-    __write_logs(date_str_list=r, client_ids=client_ids)
+    now = datetime.datetime.now()
+    params = Params(
+        path=f"./out/{now}/dist",
+        error_path=f"./out/{now}/error",
+        client_ids=client_ids
+    )
+    __create_dirs(params=params)
+    __write_logs(date_str_list=r, client_ids=client_ids, params=params)
     print('completed.')
 
 

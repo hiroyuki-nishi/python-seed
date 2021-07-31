@@ -21,7 +21,7 @@ def __parallel_process_execute(func: any, data: any, option: any, max_workers=4)
         raise
 
 
-def __parallel_thread_execute(func: any, data: any, *option: any, max_workers=4):
+def __parallel_thread_execute(func: any, data: any, option: any, max_workers=4):
     try:
         with futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
             executors = [executor.submit(func, d, option) for d in data]
